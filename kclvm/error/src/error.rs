@@ -86,3 +86,55 @@ impl ErrorKind {
         return format!("{:?}", self);
     }
 }
+
+/// Warning information of KCL. Usually something that does not conform to the specification but does not cause an error.
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct Warning {
+    pub code: &'static str,
+    pub kind: ErrorKind,
+    pub message: Option<&'static str>,
+}
+
+// Kind of KCL warning.
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum WarningKind {
+    UnusedImportWarning,
+    ReimportWarning,
+    ImportPositionWarning,
+}
+
+/// Test warning `fmt` and `name`
+/// ```
+/// use kclvm_error::*;
+/// use kclvm_error::DiagnosticId::Warning;
+/// let mut handler = Handler::default();
+/// handler.add_warning(WarningKind::UnusedImportWarning, &[
+///     Message {
+///         pos: Position::dummy_pos(),
+///         style: Style::LineAndColumn,
+///         message: "Module 'a' imported but unused.".to_string(),
+///         note: None,
+///     }],
+/// );
+/// for diag in &handler.diagnostics {
+///     match diag.code.as_ref().unwrap() {
+///         Warning(warningkind) => {
+///             println!("{}",warningkind);
+///             println!("{}",warningkind.name());
+///         }
+///         _ => {}
+///     }
+///     
+/// }
+/// ```
+impl std::fmt::Display for WarningKind {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
+
+impl WarningKind {
+    pub fn name(&self) -> String {
+        return format!("{:?}", self);
+    }
+}
