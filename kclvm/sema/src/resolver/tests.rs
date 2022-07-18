@@ -79,3 +79,27 @@ fn test_resolve_program_fail() {
     assert_eq!(diag.messages.len(), 1);
     assert_eq!(diag.messages[0].message, "expect int, got {str:int(1)}");
 }
+
+#[test]
+fn test_resolve_program_illegal_attr_fail() {
+    let mut program = parse_program("./src/resolver/test_fail_data/attr.k").unwrap();
+    let scope = resolve_program(&mut program);
+    assert_eq!(scope.diagnostics.len(), 2);
+    let expect_err_msg = "A attribute must be string type, got 'Data'";
+    let diag = &scope.diagnostics[0];
+    assert_eq!(
+        diag.code,
+        Some(DiagnosticId::Error(ErrorKind::IllegalAttributeError))
+    );
+    assert_eq!(diag.messages.len(), 1);
+    assert_eq!(diag.messages[0].pos.line, 4);
+    assert_eq!(diag.messages[0].message, expect_err_msg,);
+    let diag = &scope.diagnostics[1];
+    assert_eq!(
+        diag.code,
+        Some(DiagnosticId::Error(ErrorKind::IllegalAttributeError))
+    );
+    assert_eq!(diag.messages.len(), 1);
+    assert_eq!(diag.messages[0].message, expect_err_msg,);
+    assert_eq!(diag.messages[0].pos.line, 5);
+}
