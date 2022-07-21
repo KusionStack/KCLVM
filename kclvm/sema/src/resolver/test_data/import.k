@@ -5,6 +5,7 @@ import import_test.c  # test unused import for mixin name
 import import_test.d # test unused import for parent name
 import import_test.e # test unused import for union type
 import import_test.f as g # test unused import for union type
+import pkg #test import pkg
 
 schema Main(d.Parent):
     mixin [c.TestOfMixin]
@@ -25,3 +26,5 @@ else:
 p = Main{
     age = b._b
 }
+
+person = pkg.Person {}

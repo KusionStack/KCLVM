@@ -120,7 +120,6 @@ pub enum WarningKind {
 ///     match diag.code.as_ref().unwrap() {
 ///         Warning(warningkind) => {
 ///             println!("{}",warningkind);
-///             println!("{}",warningkind.name());
 ///         }
 ///         _ => {}
 ///     }
@@ -133,6 +132,29 @@ impl std::fmt::Display for WarningKind {
     }
 }
 
+/// Test warning `name`
+/// ```
+/// use kclvm_error::*;
+/// use kclvm_error::DiagnosticId::Warning;
+/// let mut handler = Handler::default();
+/// handler.add_warning(WarningKind::UnusedImportWarning, &[
+///     Message {
+///         pos: Position::dummy_pos(),
+///         style: Style::LineAndColumn,
+///         message: "Module 'a' imported but unused.".to_string(),
+///         note: None,
+///     }],
+/// );
+/// for diag in &handler.diagnostics {
+///     match diag.code.as_ref().unwrap() {
+///         Warning(warningkind) => {
+///             println!("{}",warningkind.name());
+///         }
+///         _ => {}
+///     }
+///     
+/// }
+/// ```
 impl WarningKind {
     pub fn name(&self) -> String {
         return format!("{:?}", self);

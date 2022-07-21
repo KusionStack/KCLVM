@@ -140,7 +140,7 @@ fn test_lint() {
         messages: vec![Message {
             pos: Position {
                 filename: filename.clone(),
-                line: 16,
+                line: 17,
                 column: None,
             },
             style: Style::Line,
