@@ -39,7 +39,7 @@ impl<'ctx> Resolver<'ctx> {
                                     pos: Position {
                                         filename: m.filename.clone(),
                                         line: stmt.line,
-                                        column: Some(1),
+                                        column: None,
                                     },
                                     style: Style::Line,
                                     message: format!(
@@ -59,7 +59,7 @@ impl<'ctx> Resolver<'ctx> {
                                         pos: Position {
                                             filename: self.ctx.filename.clone(),
                                             line: stmt.line,
-                                            column: Some(1),
+                                            column: None,
                                         },
                                         style: Style::Line,
                                         message: format!(
@@ -98,10 +98,29 @@ impl<'ctx> Resolver<'ctx> {
                             {
                                 match self.ctx.import_names.get_mut(&self.ctx.filename) {
                                     Some(mapping) => {
-                                        mapping.insert(
-                                            import_stmt.name.to_string(),
-                                            import_stmt.path.to_string(),
-                                        );
+                                        if mapping.contains_key(&import_stmt.name.to_string()) {
+                                            self.handler.add_warning(
+                                                WarningKind::ReimportWarning,
+                                                &[Message {
+                                                    pos: Position {
+                                                        filename: module.filename.clone(),
+                                                        line: stmt.line,
+                                                        column: None,
+                                                    },
+                                                    style: Style::Line,
+                                                    message: format!(
+                                                        "Module '{}' is reimported multiple times.",
+                                                        &import_stmt.name
+                                                    ),
+                                                    note: None,
+                                                }],
+                                            );
+                                        } else {
+                                            mapping.insert(
+                                                import_stmt.name.to_string(),
+                                                import_stmt.path.to_string(),
+                                            );
+                                        }
                                     }
                                     None => {
                                         let mut mapping = IndexMap::default();

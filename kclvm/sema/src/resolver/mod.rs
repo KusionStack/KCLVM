@@ -5,6 +5,7 @@ mod config;
 mod format;
 pub mod global;
 mod import;
+mod lint;
 mod r#loop;
 mod node;
 mod para;
@@ -18,7 +19,7 @@ mod var;
 #[cfg(test)]
 mod tests;
 
-use indexmap::IndexMap;
+use indexmap::{IndexMap, IndexSet};
 use std::{cell::RefCell, rc::Rc};
 
 use crate::pre_process::pre_process_program;
@@ -31,6 +32,7 @@ use kclvm_error::*;
 
 use crate::ty::TypeContext;
 
+use self::lint::{ImportPosition, Linter};
 use self::scope::{builtin_scope, ProgramScope};
 
 /// Resolver is responsible for program semantic checking, mainly
@@ -71,6 +73,7 @@ impl<'ctx> Resolver<'ctx> {
                     for stmt in &module.body {
                         self.walk_stmt(&stmt.node);
                     }
+                    self.lint_check_module(&module)
                 }
             }
             None => {}
